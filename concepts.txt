@@ -1,0 +1,8 @@
+//register controller->
+first the user send the data
+then we have to take the data from body
+check if all required fields are available or not 
+then in our regsiteration model we have to find the user if present in it then we return  without registering the user
+if user not  present we create the user in the database
+then we sent the message that user created successfully
+
