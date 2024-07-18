@@ -17,8 +17,10 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 const router = Router()
-
+//register route pe jab jate hai to method execute ho jata hai to ussse pehle middleware laga 
+//dete hai 
 router.route("/register").post(
+    //isse images bhej payenge 
     upload.fields([
         {
             name: "avatar",

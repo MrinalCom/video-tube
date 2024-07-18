@@ -13,3 +13,6 @@ const storage = multer.diskStorage({
 export const upload = multer({ 
     storage, 
 })
+
+//yahha pe multer ka storage option provide krte hai and jaha jaha multer ka middleware use
+//krna hai directly use kr skte hai

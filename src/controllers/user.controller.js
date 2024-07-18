@@ -27,23 +27,31 @@ const generateAccessAndRefereshTokens = async(userId) =>{
 const registerUser = asyncHandler( async (req, res) => {
     // get user details from frontend
     // validation - not empty
-    // check if user already exists: username, email
+    // check if user already exists: username, email as if unique 
     // check for images, check for avatar
-    // upload them to cloudinary, avatar
-    // create user object - create entry in db
+    // upload them to cloudinary, avatar as return will be url 
+    // create user object - create entry in db as .create 
     // remove password and refresh token field from response
     // check for user creation
-    // return res
+    // return response and if not send error
 
-
+    //1 get user details from frontend
     const {fullName, email, username, password } = req.body
     //console.log("email: ", email);
 
+
+
+    //2 validation - not empty
+    //agar koi bhi field khali ho to some method laga ke check kr skte hai
     if (
         [fullName, email, username, password].some((field) => field?.trim() === "")
     ) {
-        throw new ApiError(400, "All fields are required")
+        throw new ApiError(400, "All fields are required or compulsory")
     }
+
+
+    //3check if user already exists: username, email as if unique 
+
 
     const existedUser = await User.findOne({
         $or: [{ username }, { email }]
@@ -54,7 +62,16 @@ const registerUser = asyncHandler( async (req, res) => {
     }
     //console.log(req.files);
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+
+    //4.  check for images, check for avatar
+
+    //as multer gives accces to the files as middleware req ke andar aur field add
+    //kr deta hai
+    //multer ne jo file upload ki hai uska path 
+
+
+    const avatarLocalPath = req?.files?.avatar?.[0].path;
+    
     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
     let coverImageLocalPath;
@@ -67,12 +84,19 @@ const registerUser = asyncHandler( async (req, res) => {
         throw new ApiError(400, "Avatar file is required")
     }
 
+
+    //5.upload them to cloudinary, avatar as return will be url 
+
+
     const avatar = await uploadOnCloudinary(avatarLocalPath)
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!avatar) {
         throw new ApiError(400, "Avatar file is required")
     }
+
+    //5.create user object - create entry in db as .create 
+
    
 
     const user = await User.create({
@@ -84,9 +108,15 @@ const registerUser = asyncHandler( async (req, res) => {
         username: username.toLowerCase()
     })
 
+
+    //kya kya nhi chahiye select se
+
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"
     )
+    //6.check for user creation and return the response
+
+
 
     if (!createdUser) {
         throw new ApiError(500, "Something went wrong while registering the user")
@@ -97,6 +127,8 @@ const registerUser = asyncHandler( async (req, res) => {
     )
 
 } )
+
+
 
 const loginUser = asyncHandler(async (req, res) =>{
     // req body -> data
