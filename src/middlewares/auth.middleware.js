@@ -3,8 +3,12 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
 import { User } from "../models/user.model.js";
 
+
+//ye verify krega ki user hai ya nh 
 export const verifyJWT = asyncHandler(async(req, _, next) => {
     try {
+
+        //to get access token
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")
         
         // console.log(token);

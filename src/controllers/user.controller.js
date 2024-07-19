@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 
 
+//method to generate access and refresh tokens
 const generateAccessAndRefereshTokens = async(userId) =>{
     try {
         const user = await User.findById(userId)
@@ -23,6 +24,8 @@ const generateAccessAndRefereshTokens = async(userId) =>{
         throw new ApiError(500, "Something went wrong while generating referesh and access token")
     }
 }
+
+//register user
 
 const registerUser = asyncHandler( async (req, res) => {
     // get user details from frontend
@@ -73,7 +76,7 @@ const registerUser = asyncHandler( async (req, res) => {
     const avatarLocalPath = req?.files?.avatar?.[0].path;
     
     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
-
+    //agar hai to req.files me aur is array hai ya nh to 
     let coverImageLocalPath;
     if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
         coverImageLocalPath = req.files.coverImage[0].path
@@ -128,10 +131,10 @@ const registerUser = asyncHandler( async (req, res) => {
 
 } )
 
+//login user
 
-
-const loginUser = asyncHandler(async (req, res) =>{
-    // req body -> data
+const loginUser = asyncHandler(async (req, res) =>{ 
+    // req body -> data req body se data leke aao
     // username or email
     //find the user
     //password check
@@ -145,12 +148,14 @@ const loginUser = asyncHandler(async (req, res) =>{
         throw new ApiError(400, "username or email is required")
     }
     
-    // Here is an alternative of above code based on logic discussed in video:
+    // An alternative of above code 
     // if (!(username || email)) {
     //     throw new ApiError(400, "username or email is required")
         
     // }
 
+
+    //ya to user name find kr do nh to email find kr do 
     const user = await User.findOne({
         $or: [{username}, {email}]
     })
@@ -159,21 +164,31 @@ const loginUser = asyncHandler(async (req, res) =>{
         throw new ApiError(404, "User does not exist")
     }
 
+    //user methods created by own so use user here it will return true or false
    const isPasswordValid = await user.isPasswordCorrect(password)
 
    if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials")
     }
 
+    //to generate access token and refresh token we have to pass id such that it will be validated 
+
    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
+
+
+   
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
+
+    //how to send cookies
+
+    //by this it can be only modified by server
     const options = {
         httpOnly: true,
         secure: true
     }
-
+    //set cookies
     return res
     .status(200)
     .cookie("accessToken", accessToken, options)
@@ -190,7 +205,12 @@ const loginUser = asyncHandler(async (req, res) =>{
 
 })
 
+
+//logout user
 const logoutUser = asyncHandler(async(req, res) => {
+    //remove cookies and refresh tokens too
+    //query using middleware such that access token is with us
+    //refresh token database se gayab
     await User.findByIdAndUpdate(
         req.user._id,
         {
@@ -202,6 +222,8 @@ const logoutUser = asyncHandler(async(req, res) => {
             new: true
         }
     )
+
+    //cookies to hatana hai
 
     const options = {
         httpOnly: true,
