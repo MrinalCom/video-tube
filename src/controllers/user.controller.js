@@ -290,6 +290,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
+//change password
 const changeCurrentPassword = asyncHandler(async(req, res) => {
     const {oldPassword, newPassword} = req.body
 
@@ -310,6 +311,7 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"))
 })
 
+//current user as middleware has  req.user
 
 const getCurrentUser = asyncHandler(async(req, res) => {
     return res
@@ -321,6 +323,7 @@ const getCurrentUser = asyncHandler(async(req, res) => {
     ))
 })
 
+//details like username and email
 const updateAccountDetails = asyncHandler(async(req, res) => {
     const {fullName, email} = req.body
 
@@ -344,6 +347,8 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "Account details updated successfully"))
 });
+
+//files ke liye ke liye middleware 
 
 const updateUserAvatar = asyncHandler(async(req, res) => {
     const avatarLocalPath = req.file?.path
@@ -377,6 +382,8 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
         new ApiResponse(200, user, "Avatar image updated successfully")
     )
 })
+
+//update user cover image 
 
 const updateUserCoverImage = asyncHandler(async(req, res) => {
     const coverImageLocalPath = req.file?.path
