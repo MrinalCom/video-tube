@@ -237,7 +237,10 @@ const logoutUser = asyncHandler(async(req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
+//refresh access controller endpoint 
+
 const refreshAccessToken = asyncHandler(async (req, res) => {
+
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
     if (!incomingRefreshToken) {
@@ -255,12 +258,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         if (!user) {
             throw new ApiError(401, "Invalid refresh token")
         }
+
+        //incoming and sending by user is same then 
     
         if (incomingRefreshToken !== user?.refreshToken) {
             throw new ApiError(401, "Refresh token is expired or used")
             
         }
-    
+        //for sending in cookies 
         const options = {
             httpOnly: true,
             secure: true
